@@ -4,17 +4,16 @@
 const appState = {
   results: [],
   pokeTeam: [],
-  details: []
+  details: [],
+  query: ''
 };
 
 //mod function
-function addResults(state, results) {
+function addResults(state, results, query) {
   state.results = results;
+  state.query = query;
 }
 
-function addTeam(state, element){
-  state.pokeTeam.push(element);
-}
 //callback and AJAX
 const pokeApiUrl = 'https://pokeapi.co/api/v2/';
 
@@ -24,15 +23,13 @@ function getData(searchTerm, callback) {
   if ($('#selectorId').val() === 'name'){
 
     $.getJSON(pokeApiUrl+'pokemon/'+query+'/', function(data){
-      addResults(appState, data);
+      addResults(appState, data, query);
       callback();
-      //renderAbility(appState, $('.results'));
     });
   } else {
     $.getJSON(pokeApiUrl+'ability/'+query+'/', function(data){
-      addResults(appState, data);
+      addResults(appState, data, query);
       callback();
-   //renderPoke(appState, $('.results'));
     });
   }
 }
@@ -41,7 +38,7 @@ function getPokemonDetails(searchTerm, callback){
   const query = searchTerm.toLowerCase();
 
   $.getJSON(pokeApiUrl+'pokemon/'+query+'/', function(data){
-    addResults(appState, data);
+    addResults(appState, data, query);
     callback();
     //renderPokemonDetails(appState, $('.results'));
   });
@@ -50,7 +47,7 @@ function getPokemonDetails(searchTerm, callback){
 function getAbilityDetails(searchTerm, callback){
   const query = searchTerm.toLowerCase();
   $.getJSON(pokeApiUrl+'ability/'+query+'/', function(data){
-    addResults(appState, data);
+    addResults(appState, data, query);
     callback();
     //renderPoke(appState, $('.results'));
   });
@@ -59,7 +56,9 @@ function getAbilityDetails(searchTerm, callback){
 //render functions
 function renderAbility(state, element){
   if(!state.results.abilities){
-    return;
+    return `
+      <div>We're sorry, it appears we weren't able to able to locate ${state.query}. Please check the spelling and try again. </div>
+      `;
   }else{
 
   const abilityHTML = state.results.abilities.map(function(obj){
@@ -80,7 +79,9 @@ function renderAbility(state, element){
 
 function renderPoke(state, element){
   if(!state.results.pokemon){
-    return;
+    return `
+      <div>We're sorry, it appears we weren't able to able to locate ${state.query}. Please check the spelling and try again. </div>
+      `;
   }else{
   const nameHTML = state.results.pokemon.map(function(obj){
     return `
